@@ -14,7 +14,22 @@ export function createAuth() {
 
       schema: schema,
     }),
-    trustedOrigins: [env.CORS_ORIGIN, "rn-cashory://", "exp://", "http://localhost:8081"],
+    trustedOrigins: [
+      env.CORS_ORIGIN, 
+      "rn-cashory://", 
+      "rn-cashory.exp.direct://", 
+      "mybettertapp://", 
+      ...(env.NODE_ENV === 'development' ? 
+        [
+          "exp://",
+          "exp://**",
+          "exp://192.168.*.*:*/**",
+          "http://localhost:8081",
+          "http://localhost:*",
+          "exp://192.168.*:*",
+        ] : []
+      )
+    ],
     emailAndPassword: {
       enabled: true,
     },
