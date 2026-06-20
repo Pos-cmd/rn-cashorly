@@ -3,10 +3,15 @@ import { useRouter } from 'expo-router'
 import React, { useEffect } from 'react'
 import { Text, View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
+import OnboardingSplashContainer from '@/components/containers/onboarding-splash-container'
+import { useThemeColor } from 'heroui-native'
+import OnboardingTemplate from '@/components/templates/onboarding-template'
 
 const index = () => {
   const router = useRouter()
   const { data: session, isPending } = useAuthSession();
+
+  const backgroundColor = useThemeColor('background');
 
   useEffect(() => {
     if (!isPending && session?.data?.user) {
@@ -19,14 +24,11 @@ const index = () => {
   if(isPending) return (
     <>
       <StatusBar style="auto" />
+      <OnboardingSplashContainer message="Cashory makes managing your cash a breeze, so you can focus on what matters most." />
     </>
   );
 
-  return (
-    <View>
-      <Text>index</Text>
-    </View>
-  )
+  return <OnboardingTemplate />
 }
 
 export default index
