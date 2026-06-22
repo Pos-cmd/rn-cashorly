@@ -1,30 +1,44 @@
-import AuthPrimaryButton from '@/components/base/auth-primary-button'
-import useAuthTheme from '@/hooks/use-auth-theme'
-import { ONBOARDING_FONT_FAMILY } from '@/lib/constants/onboarding-typography'
-import { Ionicons } from '@expo/vector-icons'
-import * as ImagePicker from 'expo-image-picker'
-import { Avatar, Checkbox, ControlField, Input, InputGroup } from 'heroui-native'
-import React, { useMemo, useState } from 'react'
-import { Platform, Pressable, Text, useWindowDimensions, View } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import AuthPrimaryButton from "@/components/base/auth-primary-button";
+import useAuthTheme from "@/hooks/use-auth-theme";
+import { ONBOARDING_FONT_FAMILY } from "@/lib/constants/onboarding-typography";
+import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import {
+  Avatar,
+  Checkbox,
+  ControlField,
+  Input
+} from "heroui-native";
+import React, { useMemo, useState } from "react";
+import {
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+interface Country {
+  name: string;
+  code: string;
+  flag: string;
+}
 
 interface ProfileData {
-  name: string
-  // email: string
-  phone: string
-  country: Country
+  name: string;
+  phone: string;
+  country: Country;
 }
 
 interface ProfileSetupProps {
-  userData: {
-    name: string
-    email: string
-  }
-  country: Country
-  onNext: (data: ProfileData & { profileImage?: string }) => void
-  onBack: () => void
+  userData: { name: string; email: string };
+  country: Country;
+  onNext: (data: ProfileData & { profileImage?: string }) => void;
+  onBack: () => void;
 }
 
 export default function ProfileSetup({
@@ -35,44 +49,39 @@ export default function ProfileSetup({
 }: ProfileSetupProps) {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const { isDark, colors } = useAuthTheme();
+  const { colors } = useAuthTheme();
 
-  const [name, setName] = useState(userData.name)
-  const [email, setEmail] = useState(userData.email)
-  const [phone, setPhone] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
+  const [name, setName] = useState(userData.name);
+  const [phone, setPhone] = useState("");
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const [profileImage, setProfileImage] = useState<string | null>(null)
-  const [agreedToTerms, setAgreedToTerms] = useState(false)
-
-  const contentWith = useMemo(() => Math.min(346, width - 48), [width]);
+  const contentWidth = useMemo(() => Math.min(346, width - 48), [width]);
   const ctaWidth = useMemo(() => Math.min(345, width - 48), [width]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
-    })
+    });
 
     if (!result.canceled && result.assets && result.assets[0]) {
-      setProfileImage(result.assets[0].uri)
+      setProfileImage(result.assets[0].uri);
     }
-  }
+  };
 
   const handleSubmit = () => {
     if (agreedToTerms) {
       onNext({
         name: name.trim(),
-        // email: email.trim(),
         phone: phone.trim(),
         country,
-        profileImage: profileImage || undefined
-      })
+        profileImage: profileImage || undefined,
+      });
     }
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -91,7 +100,7 @@ export default function ProfileSetup({
           paddingHorizontal: 24,
         }}
       >
-        <View className="px-4 items-center gap-2.5" style={{ width: contentWith }}>
+        <View className="items-center gap-2.5" style={{ width: 327 }}>
           <Text
             className="text-h2 leading-8.75 text-center"
             style={{
@@ -101,32 +110,39 @@ export default function ProfileSetup({
           >
             Added Your Profile
           </Text>
-
-          <Text className="text-body-sm leading-3.75 text-center" style={{
-            fontFamily: ONBOARDING_FONT_FAMILY.regular,
-            color: colors.textSecondary,
-          }}>
-            Let's finish up by adding your profile details
+          <Text
+            className="text-body-sm leading-3.75 text-center"
+            style={{
+              fontFamily: ONBOARDING_FONT_FAMILY.regular,
+              color: colors.textSecondary,
+            }}
+          >
+            Complete your basic profile info
           </Text>
         </View>
 
-
         <View className="mt-5.5">
-          <Pressable onPress={pickImage} className="items-center justify-center">
-            <Avatar className="w-25 h-25" alt="Profile Avatar" asChild>
-              {
-                profileImage ? (
-                  <Avatar.Image source={{ uri: profileImage }} alt="Profile Avatar" />
-                ) : (
-                  <Avatar.Fallback>
-                    <Ionicons
-                      name="person-outline"
-                      size={40}
-                      color={colors.textPrimary}
-                    />
-                  </Avatar.Fallback>
-                )
-              }
+          <Pressable
+            onPress={pickImage}
+            className="items-center justify-center"
+          >
+            <Avatar className="w-25 h-25" alt="Profile Avatar">
+              {profileImage ? (
+                <Avatar.Image source={{ uri: profileImage }} asChild>
+                  <Image
+                    style={{ width: "100%", height: "100%" }}
+                    resizeMode="cover"
+                  />
+                </Avatar.Image>
+              ) : (
+                <Avatar.Fallback>
+                  <Ionicons
+                    name="person-outline"
+                    size={40}
+                    color={colors.textSecondary}
+                  />
+                </Avatar.Fallback>
+              )}
             </Avatar>
             <View
               className="absolute -bottom-1 -right-1 w-9.5 h-9.5 rounded-full items-center justify-center"
@@ -141,7 +157,7 @@ export default function ProfileSetup({
           </Pressable>
         </View>
 
-        <View className="mt-5.5 gap-3.5" style={{ width: contentWith }}>
+        <View className="mt-5.5 gap-2.5" style={{ width: contentWidth }}>
           <Input
             value={name}
             onChangeText={setName}
@@ -155,21 +171,6 @@ export default function ProfileSetup({
               color: colors.textPrimary,
             }}
           />
-
-          {/* <Input
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Email"
-            autoCapitalize="none"
-            autoComplete="email"
-            textContentType="emailAddress"
-            keyboardType="email-address"
-            className="h-17.5 rounded-[15px] px-5 text-body-sm leading-3.75"
-            style={{
-              fontFamily: ONBOARDING_FONT_FAMILY.regular,
-              color: colors.textPrimary,
-            }}
-          /> */}
 
           <Input
             value={phone}
@@ -185,37 +186,6 @@ export default function ProfileSetup({
               color: colors.textPrimary,
             }}
           />
-
-          <InputGroup>
-            <InputGroup.Input
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Password"
-              secureTextEntry={!showPassword}
-              autoComplete="new-password"
-              textContentType="newPassword"
-              className="h-17.5 rounded-[15px] px-5 text-body-sm leading-3.75"
-              style={{
-                fontFamily: ONBOARDING_FONT_FAMILY.regular,
-                color: colors.textPrimary,
-              }}
-            />
-            <InputGroup.Suffix>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={
-                  showPassword ? "Hide password" : "Show password"
-                }
-                onPress={() => setShowPassword((current) => !current)}
-              >
-                <Ionicons
-                  name={showPassword ? "eye-outline" : "eye-off-outline"}
-                  size={24}
-                  color={colors.icon}
-                />
-              </Pressable>
-            </InputGroup.Suffix>
-          </InputGroup>
         </View>
 
         <View className="mt-5.25 gap-5.75" style={{ width: ctaWidth }}>
@@ -240,11 +210,11 @@ export default function ProfileSetup({
 
           <AuthPrimaryButton
             onPress={handleSubmit}
-            disabled={!agreedToTerms || !name || !email}
+            disabled={!agreedToTerms || !name}
             label="Finish"
           />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  )
+  );
 }
