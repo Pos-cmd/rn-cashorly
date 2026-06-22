@@ -1,0 +1,3 @@
+{
+  "extends": "@rn-cashory/config/tsconfig.base.json"
+}

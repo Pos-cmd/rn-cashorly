@@ -1,12 +1,8 @@
-import { View, Text } from 'react-native'
+import SignInTemplate from '@/components/templates/auth/sign-in-template'
 import React from 'react'
 
 const SignIn = () => {
-  return (
-    <View>
-      <Text>SignIn</Text>
-    </View>
-  )
+  return <SignInTemplate />
 }
 
 export default SignIn

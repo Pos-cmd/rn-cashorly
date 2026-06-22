@@ -6,6 +6,10 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
+  onboardingCompleted: boolean("onboarding_completed").default(false).notNull(),
+  country: text("country"),
+  phone: text("phone"),
+  currency: text("currency").default("USD"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
