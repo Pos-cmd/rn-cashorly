@@ -1,11 +1,97 @@
 import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-key";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useAuthSession() {
   return useQuery({
     queryKey: queryKeys.auth.session,
     queryFn: () => authClient.getSession(),
     staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useSignIn() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      email,
+      password,
+    }: {
+      email: string;
+      password: string;
+    }) => {
+      const result = await authClient.signIn.email({
+        email,
+        password,
+      })
+
+      if (result.error) {
+        throw new Error(result.error.message || "Sign in failed")
+      }
+
+      return result.data
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.auth.all,
+      })
+    }
+  })
+}
+
+export function useSignUp() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      email,
+      password,
+      name,
+    }: {
+      email: string;
+      password: string;
+      name: string;
+    }) => {
+      const result = await authClient.signUp.email({
+        email,
+        password,
+        name,
+      })
+
+      if (result.error) {
+        throw new Error(result.error.message || "Sign up failed")
+      }
+
+      return result.data
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.auth.all,
+      })
+    }
+  })
+}
+
+export function useSignOut() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const result = await authClient.signOut();
+
+      if (result.error) {
+        throw new Error(result.error.message || "Sign out failed")
+      }
+
+      return result.data
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.auth.all,
+      })
+
+      await queryClient.clear()
+    }
   })
 }

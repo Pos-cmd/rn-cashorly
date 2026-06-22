@@ -6,6 +6,7 @@ import React from 'react';
 import { Image, ImageSourcePropType, Text, useWindowDimensions, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import AuthRow from '../base/auth-row';
+import AuthSeparator from '../base/auth-separator';
 
 interface OnboardingFinalContainerProps {
   imageSource: ImageSourcePropType;
@@ -139,29 +140,11 @@ const OnboardingFinalContainer = ({
                     />
                   }
                 />
-                )
-              })
+              )
+            })
             }
 
-            <View className="mt-2 flex-row items-center">
-              <View
-                className="h-px flex-1"
-                style={{ backgroundColor: separatorColor }}
-              />
-              <Text
-                className="px-4 text-body-sm leading-3.75"
-                style={{
-                  fontFamily: ONBOARDING_FONT_FAMILY.regular,
-                  color: mutedTextColor,
-                }}
-              >
-                Or Register with
-              </Text>
-              <View
-                className="h-px flex-1"
-                style={{ backgroundColor: separatorColor }}
-              />
-            </View>
+            <AuthSeparator label="Or Register with" />
 
             <AuthRow
               label="Register with Email"

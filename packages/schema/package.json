@@ -1,0 +1,22 @@
+{
+  "name": "@rn-cashory/schema",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@rn-cashory/config": "workspace:*",
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  }
+}
