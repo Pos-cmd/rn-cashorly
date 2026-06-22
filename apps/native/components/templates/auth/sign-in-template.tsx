@@ -2,11 +2,11 @@ import { AuthFooterLink } from "@/components/base/auth-footer-link";
 import AuthPrimaryButton from "@/components/base/auth-primary-button";
 import AuthSeparator from "@/components/base/auth-separator";
 import AuthSocialButtons from "@/components/base/auth-social-button";
-import { useSignUp } from "@/hooks/use-auth-session";
+import { useSignIn } from "@/hooks/use-auth-session";
 import useAuthTheme from "@/hooks/use-auth-theme";
 import { ONBOARDING_FONT_FAMILY } from "@/lib/constants/onboarding-typography";
 import { Ionicons } from "@expo/vector-icons";
-import { signUpSchema } from "@rn-cashory/schema";
+import { signInSchema } from "@rn-cashory/schema";
 import { router } from "expo-router";
 import {
   FieldError,
@@ -30,7 +30,7 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import z from "zod";
 
-type SignUpValues = z.infer<typeof signUpSchema>;
+type SignInValues = z.infer<typeof signInSchema>;
 
 function getAuthErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) {
@@ -40,18 +40,18 @@ function getAuthErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-export default function SignUpTemplate() {
+export default function SignInTemplate() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const { toast } = useToast();
-  const { isDark, colors } = useAuthTheme();
+  const { colors } = useAuthTheme();
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const signup = useSignUp();
+  const signIn = useSignIn();
 
   const contentWith = useMemo(() => Math.min(346, width - 48), [width]);
   const ctaWidth = useMemo(() => Math.min(345, width - 48), [width]);
@@ -63,24 +63,23 @@ export default function SignUpTemplate() {
     clearErrors,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<SignUpValues>({
+  } = useForm<SignInValues>({
     defaultValues: {
-      name: "",
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async (values: SignUpValues) => {
+  const onSubmit = async (values: SignInValues) => {
     setFormError(null);
     setAuthError(null);
 
-    const parsed = signUpSchema.safeParse(values);
+    const parsed = signInSchema.safeParse(values);
 
     if (!parsed.success) {
       parsed.error.issues.forEach((err) => {
         if (err.path[0]) {
-          setError(err.path[0] as keyof SignUpValues, {
+          setError(err.path[0] as keyof SignInValues, {
             type: "manual",
             message: err.message,
           });
@@ -90,8 +89,7 @@ export default function SignUpTemplate() {
     }
 
     try {
-      await signup.mutateAsync({
-        name: parsed.data.name,
+      await signIn.mutateAsync({
         email: parsed.data.email,
         password: parsed.data.password,
       });
@@ -100,18 +98,12 @@ export default function SignUpTemplate() {
 
       toast.show({
         variant: "success",
-        label: "Account created successfully!",
+        label: "Welcome back!",
       });
 
-      router.replace({
-        pathname: "/onboarding",
-        params: {
-          name: parsed.data.name.trim(),
-          email: parsed.data.email.trim(),
-        },
-      });
+      router.replace("/");
     } catch (error) {
-      setAuthError(getAuthErrorMessage(error, "Failed to create account. Please try again."));
+      setAuthError(getAuthErrorMessage(error, "Failed to sign in. Please try again."));
     }
   };
 
@@ -158,7 +150,7 @@ export default function SignUpTemplate() {
                 color: colors.textPrimary,
               }}
             >
-              Welcome aboard! 🚀
+              Welcome back!👋
             </Text>
             <Text
               className="text-body-sm leading.3.75"
@@ -167,47 +159,12 @@ export default function SignUpTemplate() {
                 color: colors.textSecondary,
               }}
             >
-              Create your Cashory account to start tracking income, expenses,
-              and everything in between
+              Sign in to your Cashory account to pick up where you left off
             </Text>
           </View>
         </View>
 
         <View className="mt-8.5 gap-3.5" style={{ width: contentWith }}>
-          <Controller
-            control={control}
-            name="name"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextField isInvalid={!!errors.name}>
-                <Input
-                  value={value}
-                  onChangeText={(text) => {
-                    setFormError(null);
-                    setAuthError(null);
-                    clearErrors("name");
-                    onChange(text);
-                  }}
-                  onBlur={onBlur}
-                  placeholder="Your full name"
-                  autoCapitalize="words"
-                  autoComplete="name"
-                  textContentType="name"
-                  returnKeyType="next"
-                  submitBehavior="submit"
-                  onSubmitEditing={() => emailInputRef.current?.focus()}
-                  className="h-17.5 rounded-[15px] px-5 text-body-sm leading-3.75"
-                  style={{
-                    fontFamily: ONBOARDING_FONT_FAMILY.medium,
-                    color: colors.textPrimary,
-                    backgroundColor: colors.inputBackground,
-                  }}
-                />
-                {errors.name?.message ? (
-                  <FieldError>{String(errors.name.message)}</FieldError>
-                ) : null}
-              </TextField>
-            )}
-          />
 
           {/* Email Field */}
           <Controller
@@ -307,7 +264,7 @@ export default function SignUpTemplate() {
         <View className="mt-auto gap-5.25" style={{ width: ctaWidth }}>
           <AuthPrimaryButton
             onPress={handleSubmit(onSubmit)}
-            label={isSubmitting ? "Joining..." : "Join Today"}
+            label={isSubmitting ? "Signing in..." : "Sign In"}
             disabled={isSubmitting}
           />
 
@@ -326,27 +283,27 @@ export default function SignUpTemplate() {
             onGooglePress={() =>
               toast.show({
                 variant: "default",
-                label: "Google registration coming soon",
+                label: "Google sign in coming soon",
               })
             }
             onApplePress={() =>
               toast.show({
                 variant: "default",
-                label: "Apple registration coming soon",
+                label: "Apple sign in coming soon",
               })
             }
             onFacebookPress={() =>
               toast.show({
                 variant: "default",
-                label: "Facebook registration coming soon",
+                label: "Facebook sign in coming soon",
               })
             }
           />
 
           <AuthFooterLink
-            prefix="You have an account?"
-            actionLabel="Let's login here"
-            onActionPress={() => router.replace("/sign-in")}
+            prefix="Don't have an account?"
+            actionLabel="Create one here"
+            onActionPress={() => router.replace("/sign-up")}
           />
         </View>
       </ScrollView>

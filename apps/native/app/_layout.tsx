@@ -25,6 +25,7 @@ function StackLayout() {
     <Stack screenOptions={{}}>
       {/* <Stack.Screen name="(drawer)" options={{ headerShown: false }} /> */}
       <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="modal" options={{ title: "Modal", presentation: "modal" }} />
     </Stack>

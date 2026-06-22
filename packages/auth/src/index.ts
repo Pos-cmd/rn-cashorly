@@ -5,6 +5,8 @@ import { env } from "@rn-cashory/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
+const devOrigins = env.NODE_ENV === 'development' ? ["*"] : [];
+
 export function createAuth() {
   const db = createDb();
 
@@ -19,20 +21,40 @@ export function createAuth() {
       "rn-cashory://", 
       "rn-cashory.exp.direct://", 
       "mybettertapp://", 
-      ...(env.NODE_ENV === 'development' ? 
-        [
-          "exp://",
-          "exp://**",
-          "exp://192.168.*.*:*/**",
-          "http://localhost:8081",
-          "http://localhost:*",
-          "exp://192.168.*:*",
-        ] : []
-      )
+      ...devOrigins,
     ],
     emailAndPassword: {
       enabled: true,
     },
+    user: {
+    additionalFields: {
+      onboardingCompleted: {
+        type: "boolean",
+        required: false,
+        input: true,
+      },
+      country: {
+        type: "string",
+        required: false,
+        input: true,
+      },
+      phone: {
+        type: "string",
+        required: false,
+        input: true,
+      },
+      image: {
+        type: "string",
+        required: false,
+        input: true,
+      },
+      currency: {
+        type: "string",
+        required: false,
+        input: true,
+      },
+    },
+  },
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
     advanced: {
