@@ -22,7 +22,7 @@ export default function Index() {
         router.replace("/onboarding");
       }
     }
-  }, [isPending, session, router]);
+  }, [isPending, session, router, pathname]);
 
   if (isPending) {
     return (

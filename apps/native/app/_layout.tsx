@@ -23,7 +23,7 @@ export const unstable_settings = {
 function StackLayout() {
   return (
     <Stack screenOptions={{}}>
-      {/* <Stack.Screen name="(drawer)" options={{ headerShown: false }} /> */}
+      <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
