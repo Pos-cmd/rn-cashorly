@@ -106,7 +106,7 @@ export function useCompletedOnboarding() {
       const result = await authClient.updateUser({ onboardingCompleted: true });
 
       if (result.error) {
-        throw new Error(result.error.message || "Update profile failed")
+        throw new Error(result.error.message || "Failed to complete onboarding")
       }
 
       return result.data
