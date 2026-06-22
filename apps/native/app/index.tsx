@@ -1,34 +1,36 @@
-import { useAuthSession } from '@/hooks/use-auth-session'
-import { useRouter } from 'expo-router'
-import React, { useEffect } from 'react'
-import { Text, View } from 'react-native'
-import { StatusBar } from 'expo-status-bar'
-import OnboardingSplashContainer from '@/components/containers/onboarding-splash-container'
-import { useThemeColor } from 'heroui-native'
-import OnboardingTemplate from '@/components/templates/onboarding-template'
+import OnboardingSplashContainer from "@/components/containers/onboarding-splash-container";
+import OnboardingTemplate from "@/components/templates/onboarding-template";
+import { usePathname, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React, { useEffect } from "react";
+import { useAuthSession } from "../hooks/use-auth-session";
 
-const index = () => {
-  const router = useRouter()
+export default function Index() {
+  const router = useRouter();
+  const pathname = usePathname();
   const { data: session, isPending } = useAuthSession();
 
-  const backgroundColor = useThemeColor('background');
-
   useEffect(() => {
+    if (pathname !== "/") return;
+
     if (!isPending && session?.data?.user) {
       const user = session.data.user;
 
-      // TODO: redirect to home if user is logged in
+      if (user?.onboardingCompleted) {
+        router.replace("/(drawer)/(tabs)");
+      } else {
+        router.replace("/onboarding");
+      }
     }
-  }, [isPending, session, router])
+  }, [isPending, session, router]);
 
-  if(isPending) return (
-    <>
-      <StatusBar style="auto" />
-      <OnboardingSplashContainer message="Cashory makes managing your cash a breeze, so you can focus on what matters most." />
-    </>
-  );
-
-  return <OnboardingTemplate />
+  if (isPending) {
+    return (
+      <>
+        <StatusBar style="auto" />
+        <OnboardingSplashContainer message="Cashory makes managing your money simple, secure, and smart" />
+      </>
+    );
+  }
+  return <OnboardingTemplate />;
 }
-
-export default index
